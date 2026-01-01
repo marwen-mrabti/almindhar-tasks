@@ -69,7 +69,7 @@ export const auth = betterAuth({
       if (ctx.path.startsWith('/sign-up')) {
         const newSession = ctx.context.newSession;
         if (newSession) {
-          void sendWelcomeEmail({
+          await sendWelcomeEmail({
             email: newSession.user.email,
             name: newSession.user.name,
           });
@@ -90,7 +90,7 @@ export const auth = betterAuth({
     magicLink({
       expiresIn: 60 * 30, // 30 minutes in seconds
       sendMagicLink: async ({ email, url }) => {
-        void sendEmailWithMagicLink({
+        await sendEmailWithMagicLink({
           email,
           url,
         });
