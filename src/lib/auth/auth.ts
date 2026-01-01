@@ -20,7 +20,6 @@ export const auth = betterAuth({
 
   trustedOrigins: [
     env.BASE_URL,
-    env.PROD_BASE_URL,
     'http://localhost:3000',
   ],
 
