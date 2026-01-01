@@ -1,6 +1,7 @@
 "use client"
 
-import { createTaskAction, updateTaskAction } from '@/_features/tasks/tasks.actions';
+
+import { createProjectAction, updateProjectAction } from '@/_features/projects/projects.actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,57 +19,67 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { taskInsertSchema } from '@/db/schemas/tasks-schema';
+import { projectInsertSchema } from '@/db/schemas/projects-schema';
+import { authClient } from '@/lib/auth/auth-client';
 import { cn } from "@/lib/utils";
 import { useForm } from '@tanstack/react-form';
 import { FileText, Loader2, Plus, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-type BaseTaskFormProps = React.ComponentProps<'div'>
+type BasePFormProps = React.ComponentProps<'div'>
 
-type CreateModeProps = BaseTaskFormProps & {
+type CreateModeProps = BasePFormProps & {
   mode: 'create';
   initialData?: never;
 };
 
-type UpdateModeProps = BaseTaskFormProps & {
+type UpdateModeProps = BasePFormProps & {
   mode: 'update';
   initialData: {
     id: string;
-    title: string;
+    name: string;
     description: string;
   };
 };
 
-type TaskFormProps = CreateModeProps | UpdateModeProps;
+type PFormProps = CreateModeProps | UpdateModeProps;
 
 
-export default function TaskForm({
+export default function PForm({
   className,
   mode = 'create',
   initialData,
   ...props
-}: TaskFormProps) {
+}: PFormProps) {
   const router = useRouter();
   const isUpdateMode = mode === 'update';
 
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+
   const form = useForm({
     defaultValues: {
-      title: initialData?.title || '',
+      name: initialData?.name || '',
       description: initialData?.description || '',
     },
     validators: {
-      onSubmit: taskInsertSchema,
+      onSubmit: projectInsertSchema.omit({ organizationId: true }),
     },
     onSubmit: async ({ value }) => {
       try {
         const result = isUpdateMode && initialData?.id
-          ? await updateTaskAction({
-            taskId: initialData.id,
+          ? await updateProjectAction({
+            projectId: initialData.id,
             userInput: value,
           })
-          : await createTaskAction({ userInput: value });
+          :
+          activeOrganization
+            ? await createProjectAction({
+              name: value.name,
+              description: value.description,
+              organizationId: activeOrganization.id
+            })
+            : await Promise.resolve({ success: false, error: 'Organization not found' });
 
         if (result.success) {
           toast.success(
@@ -86,10 +97,11 @@ export default function TaskForm({
           if (!isUpdateMode) {
             form.reset();
           }
-          router.push("/tasks");
+
+          router.push("/projects");
         } else {
           toast.error(
-            result.error || `Failed to ${isUpdateMode ? 'update' : 'create'} task`,
+            result.error || `Failed to ${isUpdateMode ? 'update' : 'create'} `,
             {
               duration: 3000,
               position: 'top-right',
@@ -113,17 +125,17 @@ export default function TaskForm({
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <FileText className='h-5 w-5' />
-            {isUpdateMode ? 'Edit Task' : 'Create New Task'}
+            {isUpdateMode ? 'Edit Project' : 'Create New Project'}
           </CardTitle>
           <CardDescription>
             {isUpdateMode
-              ? 'Update your task details'
-              : 'Add a new task to your collection'}
+              ? 'Update your project details'
+              : 'Add a new project to your collection'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form
-            id='task-form'
+            id='-form'
             onSubmit={(e) => {
               e.preventDefault();
               form.handleSubmit();
@@ -131,13 +143,13 @@ export default function TaskForm({
           >
             <FieldGroup>
               <form.Field
-                name='title'
+                name='name'
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Title</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Project Name</FieldLabel>
                       <Input
                         id={field.name}
                         name={field.name}
@@ -145,7 +157,7 @@ export default function TaskForm({
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
-                        placeholder='Enter task title'
+                        placeholder='Enter  title'
                         autoComplete='off'
                         type='text'
                       />
@@ -153,13 +165,12 @@ export default function TaskForm({
                         <FieldError errors={field.state.meta.errors} />
                       )}
                       <FieldDescription>
-                        Choose a descriptive title for your task
+                        Choose a descriptive name for your project.
                       </FieldDescription>
                     </Field>
                   );
                 }}
               />
-
               <form.Field
                 name='description'
                 children={(field) => {
@@ -175,7 +186,7 @@ export default function TaskForm({
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
-                        placeholder='Write your task content here...'
+                        placeholder='Write your  content here...'
                         rows={8}
                         className='resize-none'
                       />
@@ -183,7 +194,7 @@ export default function TaskForm({
                         <FieldError errors={field.state.meta.errors} />
                       )}
                       <FieldDescription>
-                        Enter the description of your task.
+                        Enter the description of your project.
                       </FieldDescription>
                     </Field>
                   );
@@ -212,8 +223,8 @@ export default function TaskForm({
                           ? 'Updating...'
                           : 'Creating...'
                         : isUpdateMode
-                          ? 'Update Task'
-                          : 'Create Task'}
+                          ? 'Update Project'
+                          : 'Create Project'}
                     </Button>
 
                     {!isUpdateMode && (

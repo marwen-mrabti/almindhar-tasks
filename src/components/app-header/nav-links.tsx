@@ -29,6 +29,11 @@ export const NavLinks = () => {
           })}>
             Organizations
           </Link>
+          <Link href="/projects" className={cn("text-foreground hover:text-primary", {
+            "text-primary": pathname === "/projects"
+          })}>
+            Projects
+          </Link>
           <Link href="/tasks" className={cn("text-foreground hover:text-primary", {
             "text-primary": pathname === "/tasks"
           })}>

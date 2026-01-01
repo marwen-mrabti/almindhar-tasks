@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/_features/auth/auth.data"
-import { notesDAL } from "@/_features/tasks/tasks.dal"
+import { tasksDAL } from "@/_features/tasks/tasks.dal"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
@@ -9,7 +9,7 @@ export default async function NotesList() {
   if (!user) {
     throw redirect("/sign-in")
   }
-  const tasks = await notesDAL.getUserNotes({ userId: user.id })
+  const tasks = await tasksDAL.getUserTasks({ userId: user.id })
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -22,7 +22,7 @@ export default async function NotesList() {
               <Link href={`/tasks/${task.id}`} className="hover:underline underline-offset-2">
                 <p>{task.title}</p>
               </Link>
-              <p>- {task.content}</p>
+              <p>- {task.description}</p>
             </li>
           ))}
         </ul>}

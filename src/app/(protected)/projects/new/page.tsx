@@ -1,5 +1,5 @@
 
-import TaskForm from '@/_features/tasks/components/task-form';
+import ProjectForm from '@/_features/projects/components/project-form';
 import type { Metadata } from 'next';
 import { Suspense } from "react";
 
@@ -10,7 +10,7 @@ export default async function NewTaskPage() {
 
   return (<div className="py-4 flex flex-col items-center justify-center">
     <Suspense fallback={<div>Loading...</div>}>
-      <TaskForm mode="create" />
+      <ProjectForm mode="create" />
     </Suspense>
   </div>)
 }

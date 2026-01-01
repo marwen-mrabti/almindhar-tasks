@@ -65,7 +65,7 @@ export const projectInsertSchema = createInsertSchema(projects, {
     .trim(),
 }).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true });
 
-export const projectUpdateSchema = createUpdateSchema(projects).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true });
+export const projectUpdateSchema = createUpdateSchema(projects).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true, organizationId: true });
 
 export type Project = z.infer<typeof projectSchema>;
 export type ProjectInsertInput = z.infer<typeof projectInsertSchema>;

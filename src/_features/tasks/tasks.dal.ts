@@ -1,5 +1,9 @@
 import "server-only"
 
+import { db } from "@/db"
+import { tasks } from "@/db/schemas"
+import { TaskInsertInput, TaskUpdateInput } from "@/db/schemas/tasks-schema"
+import { and, eq } from "drizzle-orm"
 import { cacheLife, cacheTag } from "next/cache"
 
 export const tasksDAL = {
@@ -15,8 +19,11 @@ export const tasksDAL = {
       if (!userId) {
         throw new Error("Unauthorized")
       }
+      const userTasks = await db.query.tasks.findMany({
+        where: eq(tasks.createdBy, userId)
+      })
 
-
+      return userTasks
     } catch (error) {
       console.error("Error fetching tasks:", error)
       throw new Error("Failed to fetch tasks")
@@ -33,8 +40,10 @@ export const tasksDAL = {
 
     try {
       if (!id || !userId) return null
-
-
+      const task = await db.query.tasks.findFirst({
+        where: eq(tasks.id, id),
+      })
+      return task
     } catch (error) {
       console.error(`Error fetching task ${id}:`, error)
       throw new Error(`Failed to fetch task ${id}`)
@@ -44,11 +53,14 @@ export const tasksDAL = {
   /**
    * Create a new task for a user
    */
-  createTask: async ({ userId, data }: { userId: string, data: unknown }) => {
+  createTask: async ({ userId, data }: { userId: string, data: TaskInsertInput }) => {
     try {
       if (!userId) throw new Error("User ID is required")
 
-
+      await db.insert(tasks).values({
+        createdBy: userId,
+        ...data,
+      })
 
       return { success: true, message: "Task created successfully" }
     } catch (error) {
@@ -67,14 +79,17 @@ export const tasksDAL = {
   }: {
     id: string,
     userId: string,
-    data: unknown
+    data: TaskUpdateInput
   }
   ) => {
     try {
       if (!userId || !id) throw new Error("User ID or Task ID is required")
 
-
-      return {}
+      await db.update(tasks).set({ ...data }).where(and(eq(tasks.id, id), eq(tasks.createdBy, userId)))
+      return {
+        success: true,
+        message: "Task updated successfully"
+      }
     } catch (error) {
       console.error(`Error updating task ${id}:`, error)
       throw new Error(`Failed to update task ${id}`)
@@ -90,12 +105,15 @@ export const tasksDAL = {
   }: {
     id: string,
     userId: string,
-  }): Promise<boolean> => {
+  }) => {
     try {
       if (!userId || !id) throw new Error("User ID or Task ID is required")
 
-
-      return true
+      await db.delete(tasks).where(and(eq(tasks.id, id), eq(tasks.createdBy, userId)))
+      return {
+        success: true,
+        message: "Task deleted successfully"
+      }
     } catch (error) {
       console.error(`Error deleting task ${id}:`, error)
       throw new Error(`Failed to delete task ${id}`)
