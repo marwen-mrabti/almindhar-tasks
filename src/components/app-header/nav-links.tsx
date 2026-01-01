@@ -35,11 +35,7 @@ export const NavLinks = () => {
             Tasks
           </Link>
         </> :
-        <>
-          <Link href="/sign-in" className={cn("text-foreground hover:text-primary", {
-            "text-primary": pathname === "/sign-in"
-          })}>Sign In</Link>
-        </>
+        null
       }
     </nav>
   );
