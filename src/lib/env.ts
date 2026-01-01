@@ -8,7 +8,7 @@ const envSchema = z.object({
     .url('BASE_URL must be a valid URL')
     .default('http://localhost:3000'),
   PROD_BASE_URL: z
-    .url('BASE_URL must be a valid URL'),
+    .url('BASE_URL must be a valid URL').optional(),
   // Database Configuration
   DATABASE_URL: z.url('DATABASE_URL must be a valid URL'),
 
