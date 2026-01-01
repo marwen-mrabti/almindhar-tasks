@@ -2,7 +2,9 @@
 
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import * as React from "react";
+
 
 export function ThemeProvider({
   children,
@@ -23,9 +25,9 @@ export function Providers({
       enableSystem
       disableTransitionOnChange
     >
-
-      {children}
-
+      <NuqsAdapter>
+        {children}
+      </NuqsAdapter>
       <Toaster />
     </ThemeProvider>
   );

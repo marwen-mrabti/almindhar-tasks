@@ -1,5 +1,5 @@
 export const emailColors = {
-  primary: '#d97706',
+  primary: '#0f91b2',
   primaryForeground: '#ffffff',
   background: '#eff1f5',
   foreground: '#18181b',

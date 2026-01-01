@@ -1,6 +1,6 @@
 'use client'
 
-import { useMagicLink } from '@/app/_features/auth/hooks/useMagicLink';
+import { useMagicLink } from '@/_features/auth/hooks/useMagicLink';
 import { Button } from '@/components/ui/button';
 import { Loader2, Mail } from 'lucide-react';
 import { useRouter } from "next/navigation";

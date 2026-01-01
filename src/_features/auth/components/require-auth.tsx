@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/app/_features/auth/auth.data"
+import { getCurrentUser } from "@/_features/auth/auth.data"
 import { redirect } from "next/navigation"
 
 export default async function RequireAuth({

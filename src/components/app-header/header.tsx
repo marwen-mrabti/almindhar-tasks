@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import ModeToggle from "./mode-toggle";
 import { NavLinks } from "./nav-links";
+import UserMenu from "./user-menu";
 export default function Header() {
 
   return (
@@ -16,6 +17,9 @@ export default function Header() {
         <NavLinks />
       </Suspense>
       <div className="flex items-center gap-4">
+        <Suspense fallback={null}>
+          <UserMenu />
+        </Suspense>
         <ModeToggle />
       </div>
     </header>

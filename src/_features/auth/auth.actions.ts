@@ -1,6 +1,6 @@
 "use server"
 
-import { type MagicLinkCredentials, magicLinkLoginSchema } from "@/app/_features/auth/auth-utils";
+import { type MagicLinkCredentials, magicLinkLoginSchema } from "@/_features/auth/auth-utils";
 import { auth } from '@/lib/auth/auth';
 import { validateWithPretty } from '@/lib/helpers';
 import { headers } from 'next/headers';
@@ -19,8 +19,8 @@ export const signInWithMagicLink = async ({ email, name }: MagicLinkCredentials)
       body: {
         email: data.email,
         name: data.name,
-        callbackURL: '/',
-        newUserCallbackURL: '/',
+        callbackURL: '/dashboard',
+        newUserCallbackURL: '/dashboard',
         errorCallbackURL: `/error?${callbackParams.toString()}`,
       },
       headers: await headers(),
