@@ -1,0 +1,216 @@
+"use client"
+
+import { magicLinkLoginSchema } from '@/app/_features/auth/auth-utils';
+import { useMagicLink } from '@/app/_features/auth/hooks/useMagicLink';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { authClient } from '@/lib/auth/auth-client';
+import { cn } from "@/lib/utils";
+import { useForm } from '@tanstack/react-form';
+import { Loader2, Mail } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useQueryState } from 'nuqs';
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+export function SignInForm({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  const router = useRouter();
+  const [nameQuery, setNameQuery] = useQueryState('name');
+  const [emailQuery, setEmailQuery] = useQueryState('email');
+
+  const { sendMagicLink, pending, cooldown, formatCooldown } = useMagicLink();
+  const [socialSignInPending, setSocialSignInPending] = useState(false);
+
+  const form = useForm({
+    defaultValues: {
+      email: emailQuery || '',
+      name: nameQuery || '',
+    },
+    validators: {
+      onSubmit: magicLinkLoginSchema,
+    },
+    onSubmit: async ({ value }) => {
+      const result = await sendMagicLink({
+        email: value.email,
+        name: value.name,
+      });
+
+      if (result.success) {
+        const params = new URLSearchParams({
+          name: value.name,
+          email: value.email,
+        });
+        router.push(`/check-email?${params.toString()}`);
+      }
+    },
+  });
+
+  const handleSocialSignIn = async (provider: 'github' | 'google') => {
+    setSocialSignInPending(true);
+
+    await authClient.signIn.social({
+      provider,
+      callbackURL: '/',
+      errorCallbackURL: '/error?type=social',
+      newUserCallbackURL: '/',
+      fetchOptions: {
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+          router.push('/error?type=social');
+        },
+      },
+    });
+
+    setSocialSignInPending(false);
+  };
+
+  return (
+    <div className={cn('flex flex-col gap-6 w-full max-w-md mx-auto', className)} {...props}>
+      <Card>
+        <CardHeader className='text-center'>
+          <CardTitle className='text-xl'>Welcome back</CardTitle>
+          <CardDescription>Login with your GitHub or MagicLink</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            id='login-form'
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+          >
+            <FieldGroup>
+              <Field>
+                <Button
+                  onClick={() => handleSocialSignIn('github')}
+                  variant='outline'
+                  type='button'
+                  className='w-full'
+                >
+                  {socialSignInPending ? (
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  ) : (
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      viewBox='0 0 16 16'
+                      fill='currentColor'
+                      className='mr-2 h-4 w-4'
+                    >
+                      <path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2.0-.21.15-.46.55-.38C13.71 14.53 16 11.53 16 8c0-4.42-3.58-8-8-8' />
+                    </svg>
+                  )}
+                  Login with GitHub
+                </Button>
+              </Field>
+
+              <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card mb-2'>
+                Or continue with MagicLink
+                <small className='text-muted-foreground mx-1 text-xs'>
+                  [we will send you an email with a link to login]
+                </small>
+              </FieldSeparator>
+
+              <form.Field
+                name='name'
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Username</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => {
+                          field.handleChange(e.target.value);
+                          setNameQuery(e.target.value);
+                        }}
+                        aria-invalid={isInvalid}
+                        placeholder='joe'
+                        autoComplete='on'
+                        type='text'
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+
+              <form.Field
+                name='email'
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => {
+                          field.handleChange(e.target.value);
+                          setEmailQuery(e.target.value);
+                        }}
+                        aria-invalid={isInvalid}
+                        placeholder='m@example.com'
+                        autoComplete='on'
+                        type='email'
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+
+              <Field>
+                <Button type='submit' disabled={pending || cooldown > 0} className='w-full'>
+                  {pending ? (
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  ) : (
+                    <Mail className='mr-2 h-4 w-4' />
+                  )}
+                  {pending
+                    ? 'Sending...'
+                    : cooldown > 0
+                      ? `Wait ${formatCooldown(cooldown)}`
+                      : 'Send Magic Link'}
+                </Button>
+              </Field>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      </Card>
+
+      <FieldDescription className='px-6 text-center'>
+        By clicking continue, you agree to our <a href='#'>Terms of Service</a>{' '}
+        and <a href='#'>Privacy Policy</a>.
+      </FieldDescription>
+    </div>
+  );
+}

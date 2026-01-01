@@ -2,6 +2,7 @@ import Logo from "@/app/assets/logo-colored.png";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import ModeToggle from "./mode-toggle";
 import { NavLinks } from "./nav-links";
 export default function Header() {
@@ -11,8 +12,10 @@ export default function Header() {
       <Link href="/" className="flex items-center">
         <Image src={Logo} alt="Alminthar Tasks Logo" className={cn("w-32 dark:invert")} />
       </Link>
-      <NavLinks />
-      <div className="flex items-center gap-4 ">
+      <Suspense fallback={null}>
+        <NavLinks />
+      </Suspense>
+      <div className="flex items-center gap-4">
         <ModeToggle />
       </div>
     </header>
