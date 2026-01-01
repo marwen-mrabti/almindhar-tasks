@@ -54,7 +54,6 @@ export function SignInForm({
         email: value.email,
         name: value.name,
       });
-
       if (result.success) {
         const params = new URLSearchParams({
           name: value.name,
@@ -90,7 +89,7 @@ export function SignInForm({
         <CardHeader className='text-center flex flex-col items-center gap-2'>
           <div className="flex items-center justify-center w-full">
             <Separator className="w-1/5!" />
-            <Image src={Logo} alt="Alminthar Tasks Logo" className={cn("mx-1 w-32 flex-1 dark:invert")} />
+            <Image src={Logo} alt="Alminthar Tasks Logo" className={cn("mx-1 w-32 flex-1 dark:invert")} loading="eager" />
             <Separator className="w-1/5!" />
           </div>
           <CardTitle className='text-xl'>Welcome back</CardTitle>
@@ -104,7 +103,7 @@ export function SignInForm({
         </CardHeader>
         <CardContent>
           <form
-            id='login-form'
+            id='signin-form'
             onSubmit={(e) => {
               e.preventDefault();
               form.handleSubmit();

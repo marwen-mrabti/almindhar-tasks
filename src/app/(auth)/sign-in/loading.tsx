@@ -1,6 +1,4 @@
-
-
-import SignInFormSkeleton from '@/_features/auth/components/sign-in-form-sekelton';
+import SignInFormSkeleton from '@/_features/auth/components/sign-in-form-skeleton';
 
 export default function SignInPageLoadingSkeleton() {
   return (

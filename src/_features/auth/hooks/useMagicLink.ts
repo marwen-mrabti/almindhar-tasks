@@ -1,5 +1,5 @@
 import type { MagicLinkCredentials } from '@/_features/auth/auth-utils';
-import { signInWithMagicLink } from '@/_features/auth/auth.actions';
+import { authClient } from '@/lib/auth/auth-client';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -49,13 +49,21 @@ export function useMagicLink() {
       setPending(true);
 
       try {
-        const data = await signInWithMagicLink({
+        const callbackParams = new URLSearchParams({
+          name: credentials.name,
+          email: credentials.email,
+          type: 'magic-link'
+        });
+        const { data, error } = await authClient.signIn.magicLink({
           email: credentials.email,
           name: credentials.name,
+          callbackURL: '/dashboard',
+          newUserCallbackURL: '/dashboard',
+          errorCallbackURL: `/error?${callbackParams.toString()}`,
         });
 
-        if (!data.success) {
-          throw new Error(data.error);
+        if (!data && error) {
+          throw error
         }
 
         // Store credentials and timestamp
@@ -68,21 +76,15 @@ export function useMagicLink() {
           position: 'top-right',
         });
 
-        return data;
+        return { success: true, error: null };
       } catch (error) {
+        console.log(error)
         const message = "Oops! Something went wrong.";
         toast.error(message, {
           description:
             error instanceof Error ? error.message : 'it is us! this error is from the server. please try again later',
           position: 'top-right',
           duration: 3000,
-          classNames: {
-            content: 'w-sm flex flex-col gap-2 p-2',
-            description: 'text-xs text-card-foreground!',
-          },
-          style: {
-            '--border-radius': 'calc(var(--radius) + 4px)',
-          } as React.CSSProperties,
         });
         return { success: false, error: message };
       } finally {

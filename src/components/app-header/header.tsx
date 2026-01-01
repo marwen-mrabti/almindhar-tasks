@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 container mx-auto  flex items-center justify-between px-4 py-4 shadow-sm backdrop-blur-lg bg-secondary">
       <Link href="/" className="flex items-center">
-        <Image src={Logo} alt="Alminthar Tasks Logo" className={cn("w-32 dark:invert")} />
+        <Image src={Logo} alt="Alminthar Tasks Logo" className={cn("w-32 dark:invert")} loading="eager" />
       </Link>
       <Suspense fallback={null}>
         <NavLinks />

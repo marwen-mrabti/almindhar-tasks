@@ -7,7 +7,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { createAuthMiddleware, magicLink } from 'better-auth/plugins';
+import { createAuthMiddleware, magicLink, organization } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -81,6 +81,7 @@ export const auth = betterAuth({
             user: null,
           });
         }
+
         return ctx.json(ctx.context.session);
       }
     }),
@@ -97,6 +98,8 @@ export const auth = betterAuth({
       },
     }),
 
+    organization(),
+
     nextCookies()
   ],
 
@@ -108,3 +111,4 @@ export const auth = betterAuth({
 
 export type Session = typeof auth.$Infer.Session;
 export type User = Session['user'];
+export type Organization = typeof auth.$Infer.Organization;

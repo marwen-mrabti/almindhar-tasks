@@ -20,9 +20,21 @@ import { useRouter } from "next/navigation";
 
 export default function UserMenu() {
   const router = useRouter();
-  const { data: session } = authClient.useSession()
-  const user = session?.user
+  const { data: session, isPending } = authClient.useSession()
 
+  if (isPending) {
+    return (
+      <>
+        <Avatar className='h-9 w-9 animate-pulse'>
+          <AvatarFallback>
+            <User className='h-5 w-5' />
+          </AvatarFallback>
+        </Avatar>
+      </>
+    )
+  }
+
+  const user = session?.user
   if (!user) return null;
 
   const handleLogout = async () => {
@@ -74,6 +86,19 @@ export default function UserMenu() {
               data-icon='inline-start'
             />
             Dashboard
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            render={<Link href="/organizations" />}
+            className={cn('cursor-pointer')}
+          >
+            <LayoutDashboardIcon
+              className='h-4 w-4'
+              data-icon='inline-start'
+            />
+            Organizations
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
