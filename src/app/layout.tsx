@@ -1,4 +1,5 @@
 import "@/app/assets/css/globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/app-header/header";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ export default function RootLayout({
             {children}
           </main>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
