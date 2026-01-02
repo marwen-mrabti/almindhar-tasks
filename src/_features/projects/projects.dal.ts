@@ -41,10 +41,10 @@ export const projectsDAL = {
       if (!userId || !organizationId) {
         throw new Error("Unauthorized")
       }
-      const userProjects = await db.query.projects.findMany({
+      const organizationProjects = await db.query.projects.findMany({
         where: and(eq(projects.createdBy, userId), eq(projects.organizationId, organizationId)),
       })
-      return userProjects
+      return organizationProjects
     } catch (error) {
       console.error("Error fetching projects:", error)
       throw new Error("Failed to fetch projects")

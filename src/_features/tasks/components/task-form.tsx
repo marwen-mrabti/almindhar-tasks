@@ -25,7 +25,10 @@ import { FileText, Loader2, Plus, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-type BaseTaskFormProps = React.ComponentProps<'div'>
+type BaseTaskFormProps = React.ComponentProps<'div'> & {
+  organizationId: string;
+  projectId: string;
+}
 
 type CreateModeProps = BaseTaskFormProps & {
   mode: 'create';
@@ -43,10 +46,11 @@ type UpdateModeProps = BaseTaskFormProps & {
 
 type TaskFormProps = CreateModeProps | UpdateModeProps;
 
-
 export default function TaskForm({
   className,
   mode = 'create',
+  organizationId,
+  projectId,
   initialData,
   ...props
 }: TaskFormProps) {
@@ -59,7 +63,7 @@ export default function TaskForm({
       description: initialData?.description || '',
     },
     validators: {
-      onSubmit: taskInsertSchema,
+      onSubmit: taskInsertSchema.omit({ projectId: true, organizationId: true }),
     },
     onSubmit: async ({ value }) => {
       try {
@@ -68,7 +72,12 @@ export default function TaskForm({
             taskId: initialData.id,
             userInput: value,
           })
-          : await createTaskAction({ userInput: value });
+          : await createTaskAction({
+            organizationId,
+            projectId,
+            title: value.title,
+            description: value.description,
+          });
 
         if (result.success) {
           toast.success(
@@ -86,7 +95,7 @@ export default function TaskForm({
           if (!isUpdateMode) {
             form.reset();
           }
-          router.push("/tasks");
+          router.push(`/organizations/${organizationId}/projects/${projectId}`);
         } else {
           toast.error(
             result.error || `Failed to ${isUpdateMode ? 'update' : 'create'} task`,

@@ -1,6 +1,5 @@
 "use client"
 
-
 import { createProjectAction, updateProjectAction } from '@/_features/projects/projects.actions';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,21 +19,22 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { projectInsertSchema } from '@/db/schemas/projects-schema';
-import { authClient } from '@/lib/auth/auth-client';
 import { cn } from "@/lib/utils";
 import { useForm } from '@tanstack/react-form';
 import { FileText, Loader2, Plus, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-type BasePFormProps = React.ComponentProps<'div'>
+type BaseProjectFormProps = React.ComponentProps<'div'> & {
+  organizationId: string;
+};
 
-type CreateModeProps = BasePFormProps & {
+type CreateModeProps = BaseProjectFormProps & {
   mode: 'create';
   initialData?: never;
 };
 
-type UpdateModeProps = BasePFormProps & {
+type UpdateModeProps = BaseProjectFormProps & {
   mode: 'update';
   initialData: {
     id: string;
@@ -43,19 +43,18 @@ type UpdateModeProps = BasePFormProps & {
   };
 };
 
-type PFormProps = CreateModeProps | UpdateModeProps;
+type ProjectFormProps = CreateModeProps | UpdateModeProps;
 
 
-export default function PForm({
+export default function ProjectForm({
   className,
   mode = 'create',
+  organizationId,
   initialData,
   ...props
-}: PFormProps) {
+}: ProjectFormProps) {
   const router = useRouter();
   const isUpdateMode = mode === 'update';
-
-  const { data: activeOrganization } = authClient.useActiveOrganization()
 
   const form = useForm({
     defaultValues: {
@@ -72,14 +71,11 @@ export default function PForm({
             projectId: initialData.id,
             userInput: value,
           })
-          :
-          activeOrganization
-            ? await createProjectAction({
-              name: value.name,
-              description: value.description,
-              organizationId: activeOrganization.id
-            })
-            : await Promise.resolve({ success: false, error: 'Organization not found' });
+          : await createProjectAction({
+            name: value.name,
+            description: value.description,
+            organizationId
+          });
 
         if (result.success) {
           toast.success(
@@ -97,8 +93,7 @@ export default function PForm({
           if (!isUpdateMode) {
             form.reset();
           }
-
-          router.push("/projects");
+          router.push(`/organizations/${organizationId}`);
         } else {
           toast.error(
             result.error || `Failed to ${isUpdateMode ? 'update' : 'create'} `,

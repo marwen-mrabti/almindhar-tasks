@@ -8,42 +8,41 @@ import { notFound, redirect } from 'next/navigation';
 
 
 export const metadata: Metadata = {
-  title: 'Note Details',
+  title: 'Task Details',
 }
-export default async function NotePage({
+export default async function TaskPage({
   params,
 }: {
-  params: Promise<{ noteId: string }>
+  params: Promise<{ taskId: string }>
 }) {
-  const { noteId } = await params;
+  const { taskId } = await params;
 
   const user = await getCurrentUser()
   if (!user) {
     throw redirect("/sign-in")
   }
 
-  const task = await tasksDAL.getUserTaskById({ id: noteId, userId: user.id });
+  const task = await tasksDAL.getUserTaskById({ id: taskId, userId: user.id });
   if (!task) {
     notFound()
   }
 
   return (<div>
-    <h1 className="text-2xl font-bold">Note: {noteId}</h1>
+    <h1 className="text-2xl font-bold">Task: {taskId}</h1>
     <h3 className="text-lg text-primary">
       {task.title}
     </h3>
     <p className="text-base text-secondary-foreground">
-      {task.content}
+      {task.description}
     </p>
     <p className="text-sm text-gray-500">
       Created at: {formatDate(task.createdAt)}
     </p>
     <Button variant="link"
-      render={<Link href={`/tasks/${task.id}/edit`} className="text-primary" />}
+      render={<Link href={`/organizations/${task.organizationId}/projects/${task.projectId}/tasks/${taskId}/edit`} className="text-primary" />}
       nativeButton={false}
     >
       Edit Task
     </Button>
-
   </div>)
 }

@@ -16,7 +16,6 @@ export const NavLinks = () => {
       {isPending ? <>
         <Skeleton className="w-24 h-6 bg-muted-foreground/30" />
         <Skeleton className="w-24 h-6 bg-muted-foreground/30" />
-        <Skeleton className="w-24 h-6 bg-muted-foreground/30" />
       </> : user ?
         <>
           <Link href="/dashboard" className={cn("text-foreground hover:text-primary", {
@@ -28,16 +27,6 @@ export const NavLinks = () => {
             "text-primary": pathname === "/organization"
           })}>
             Organizations
-          </Link>
-          <Link href="/projects" className={cn("text-foreground hover:text-primary", {
-            "text-primary": pathname === "/projects"
-          })}>
-            Projects
-          </Link>
-          <Link href="/tasks" className={cn("text-foreground hover:text-primary", {
-            "text-primary": pathname === "/tasks"
-          })}>
-            Tasks
           </Link>
         </> :
         null

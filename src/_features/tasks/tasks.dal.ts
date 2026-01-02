@@ -13,7 +13,7 @@ export const tasksDAL = {
   getUserTasks: async ({ userId }: { userId: string }) => {
     "use cache"
     cacheLife("hours")
-    cacheTag("user-tasks")
+    cacheTag("tasks")
 
     try {
       if (!userId) {
@@ -29,6 +29,30 @@ export const tasksDAL = {
       throw new Error("Failed to fetch tasks")
     }
   },
+
+  /**
+   * Fetch all tasks for a specific project
+   */
+  getUserTasksByProjectId: async ({ projectId, userId }: { projectId: string, userId: string }) => {
+    "use cache"
+    cacheLife("hours")
+    cacheTag("tasks")
+
+    try {
+      if (!projectId || !userId) {
+        throw new Error("Unauthorized")
+      }
+      const projectTasks = await db.query.tasks.findMany({
+        where: and(eq(tasks.projectId, projectId), eq(tasks.createdBy, userId))
+      })
+
+      return projectTasks
+    } catch (error) {
+      console.error("Error fetching tasks:", error)
+      throw new Error("Failed to fetch tasks")
+    }
+  },
+
 
   /**
    * Fetch a single task by id for a specific user

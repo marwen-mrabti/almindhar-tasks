@@ -22,7 +22,7 @@ export const tasks = pgTable(
       .notNull()
       .references(() => projects.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
-    description: text("description"),
+    description: text("description").notNull(),
     isDone: boolean("is_done").default(false).notNull(),
     createdBy: text("created_by")
       .notNull()
@@ -72,9 +72,9 @@ export const taskInsertSchema = createInsertSchema(tasks, {
     .min(10, 'Content must be at least 10 characters')
     .max(10000, 'Content must be less than 10,000 characters')
     .trim(),
-}).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true });
+}).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true, isDone: true });
 
-export const taskUpdateSchema = createUpdateSchema(tasks).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true });
+export const taskUpdateSchema = createUpdateSchema(tasks).omit({ id: true, createdAt: true, updatedAt: true, createdBy: true, projectId: true, organizationId: true });
 
 export type Task = z.infer<typeof taskSchema>;
 export type TaskInsertInput = z.infer<typeof taskInsertSchema>;

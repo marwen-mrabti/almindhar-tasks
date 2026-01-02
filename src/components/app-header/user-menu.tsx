@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
-import { Building2, LayoutDashboardIcon, LogOutIcon, NotebookIcon, Proportions, User } from "lucide-react";
+import { Building2, LayoutDashboardIcon, LogOutIcon, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -103,33 +103,6 @@ export default function UserMenu() {
                 data-icon='inline-start'
               />
               Organizations
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              render={<Link href="/projects" />}
-              className={cn('cursor-pointer')}
-            >
-              <Proportions
-                className='h-4 w-4'
-                data-icon='inline-start'
-              />
-              Projects
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              render={<Link href="/tasks" />}
-              className={cn('cursor-pointer')}
-            >
-              <NotebookIcon
-                className='h-4 w-4'
-                data-icon='inline-start'
-              />
-              Tasks
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
