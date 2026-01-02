@@ -59,22 +59,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Configure the following variables in your `.env` file:
 
-| Variable | Description |
-|Data Source| |
-| `DATABASE_URL` | Connection string for your PostgreSQL database. |
-| **Authentication** | |
-| `BETTER_AUTH_SECRET` | Secret key for signing session tokens. Generate one with `openssl rand -base64 32`. |
-| `BASE_URL` | The base URL of your application (e.g., `http://localhost:3000`). |
-| `AUTH_GOOGLE_CLIENT_ID` | Google OAuth Client ID (optional). |
-| `AUTH_GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret (optional). |
-| **Email (SMTP)** | |
-| `SMTP_SERVICE` | SMTP service provider (e.g., `gmail`). |
-| `SMTP_HOST` | SMTP host address. |
-| `SMTP_PORT` | SMTP port (e.g., `465` or `587`). |
-| `SMTP_USER` | SMTP username/email. |
-| `SMTP_PASSWORD` | SMTP password. |
-| **Misc** | |
-| `NODE_ENV` | Environment mode (`development`, `production`, `test`). |
+### Data Source
+- `DATABASE_URL`: Connection string for your PostgreSQL database.
+
+### Authentication
+- `BETTER_AUTH_SECRET`: Secret key for signing session tokens. Generate one with `openssl rand -base64 32`.
+- `BASE_URL`: The base URL of your application (e.g., `http://localhost:3000`).
+- `AUTH_GOOGLE_CLIENT_ID`: Google OAuth Client ID (optional).
+- `AUTH_GOOGLE_CLIENT_SECRET`: Google OAuth Client Secret (optional).
+
+### Email (SMTP)
+- `SMTP_SERVICE`: SMTP service provider (e.g., `gmail`).
+- `SMTP_HOST`: SMTP host address.
+- `SMTP_PORT`: SMTP port (e.g., `465` or `587`).
+- `SMTP_USER`: SMTP username/email.
+- `SMTP_PASSWORD`: SMTP password.
+
+### Misc
+- `NODE_ENV`: Environment mode (`development`, `production`, `test`).
 
 ## Why Better Auth?
 
